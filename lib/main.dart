@@ -212,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'identify',
               '-ping',
               '-format',
-              '%w|%h|%B',
+              '%w|%h|%B|%[orientation]',
               newPath,
             ]);
 
@@ -221,10 +221,24 @@ class _MyHomePageState extends State<MyHomePage> {
               final String firstLine = output.split('\n').first;
               final List<String> parts = firstLine.split('|');
 
-              if (parts.length == 3) {
-                final int width = int.tryParse(parts[0]) ?? 0;
-                final int height = int.tryParse(parts[1]) ?? 0;
+              if (parts.length >= 3) {
+                int width = int.tryParse(parts[0]) ?? 0;
+                int height = int.tryParse(parts[1]) ?? 0;
                 final int sizeBytes = int.tryParse(parts[2]) ?? 0;
+
+                if (parts.length >= 4) {
+                  final String orientation = parts[3];
+                  if ([
+                    'LeftTop',
+                    'RightTop',
+                    'RightBottom',
+                    'LeftBottom',
+                  ].contains(orientation)) {
+                    final temp = width;
+                    width = height;
+                    height = temp;
+                  }
+                }
 
                 setState(() {
                   item.status = '完成';
@@ -293,12 +307,12 @@ class _MyHomePageState extends State<MyHomePage> {
           if (file.path == null) return;
           try {
             // 调用 magick identify 获取图片信息
-            // 格式: 宽|高|大小(字节)
+            // 格式: 宽|高|大小(字节)|方向
             final result = await Process.run('magick', [
               'identify',
               '-ping',
               '-format',
-              '%w|%h|%B',
+              '%w|%h|%B|%[orientation]',
               file.path!,
             ]);
 
@@ -308,10 +322,24 @@ class _MyHomePageState extends State<MyHomePage> {
               final String firstLine = output.split('\n').first;
               final List<String> parts = firstLine.split('|');
 
-              if (parts.length == 3) {
-                final int width = int.tryParse(parts[0]) ?? 0;
-                final int height = int.tryParse(parts[1]) ?? 0;
+              if (parts.length >= 3) {
+                int width = int.tryParse(parts[0]) ?? 0;
+                int height = int.tryParse(parts[1]) ?? 0;
                 final int sizeBytes = int.tryParse(parts[2]) ?? 0;
+
+                if (parts.length >= 4) {
+                  final String orientation = parts[3];
+                  if ([
+                    'LeftTop',
+                    'RightTop',
+                    'RightBottom',
+                    'LeftBottom',
+                  ].contains(orientation)) {
+                    final temp = width;
+                    width = height;
+                    height = temp;
+                  }
+                }
 
                 newImages.add(
                   ImageItem(
