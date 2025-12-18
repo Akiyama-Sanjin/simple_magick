@@ -122,12 +122,20 @@ class _MyHomePageState extends State<MyHomePage> {
             title: const Text('提示'),
             content: const Text('您已经缩放过本批图片，是否重新缩放并覆盖？'),
             actions: [
-              TextButton(
+              ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(false),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade300,
+                  foregroundColor: Colors.black87,
+                ),
                 child: const Text('否'),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                ),
                 child: const Text('是'),
               ),
             ],
