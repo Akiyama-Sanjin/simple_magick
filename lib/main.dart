@@ -30,6 +30,9 @@ class ImageItem {
   final int width;
   final int height;
   String status;
+  int? newWidth;
+  int? newHeight;
+  int? newSizeBytes;
 
   ImageItem({
     required this.name,
@@ -38,17 +41,26 @@ class ImageItem {
     required this.width,
     required this.height,
     this.status = '',
+    this.newWidth,
+    this.newHeight,
+    this.newSizeBytes,
   });
 
   String get resolution => '${width}x$height';
+  String get newResolution =>
+      (newWidth != null && newHeight != null) ? '${newWidth}x$newHeight' : '';
 
-  String get sizeString {
-    if (sizeBytes < 1024) return '$sizeBytes B';
-    if (sizeBytes < 1024 * 1024) {
-      return '${(sizeBytes / 1024).toStringAsFixed(1)} KB';
+  String _formatBytes(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) {
+      return '${(bytes / 1024).toStringAsFixed(1)} KB';
     }
-    return '${(sizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
+
+  String get sizeString => _formatBytes(sizeBytes);
+  String get newSizeString =>
+      newSizeBytes != null ? _formatBytes(newSizeBytes!) : '';
 
   String get aspectRatio {
     int gcd(int a, int b) => b == 0 ? a : gcd(b, a % b);
@@ -194,9 +206,48 @@ class _MyHomePageState extends State<MyHomePage> {
 
         if (!mounted) return;
         if (result.exitCode == 0) {
-          setState(() {
-            item.status = '完成';
-          });
+          // 获取新图片信息
+          try {
+            final infoResult = await Process.run('magick', [
+              'identify',
+              '-ping',
+              '-format',
+              '%w|%h|%B',
+              newPath,
+            ]);
+
+            if (infoResult.exitCode == 0) {
+              final String output = infoResult.stdout.toString().trim();
+              final String firstLine = output.split('\n').first;
+              final List<String> parts = firstLine.split('|');
+
+              if (parts.length == 3) {
+                final int width = int.tryParse(parts[0]) ?? 0;
+                final int height = int.tryParse(parts[1]) ?? 0;
+                final int sizeBytes = int.tryParse(parts[2]) ?? 0;
+
+                setState(() {
+                  item.status = '完成';
+                  item.newWidth = width;
+                  item.newHeight = height;
+                  item.newSizeBytes = sizeBytes;
+                });
+              } else {
+                setState(() {
+                  item.status = '完成';
+                });
+              }
+            } else {
+              setState(() {
+                item.status = '完成';
+              });
+            }
+          } catch (e) {
+            setState(() {
+              item.status = '完成';
+            });
+            debugPrint('Get new info error: $e');
+          }
         } else {
           setState(() {
             item.status = '失败';
@@ -394,7 +445,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   flex: 1,
                   child: Text(
-                    '比例',
+                    '画面比例',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -402,6 +453,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   flex: 1,
                   child: Text(
                     '大小',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    '新分辨率',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    '新大小',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -444,6 +509,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       Expanded(flex: 2, child: Text(item.resolution)),
                       Expanded(flex: 1, child: Text(item.aspectRatio)),
                       Expanded(flex: 1, child: Text(item.sizeString)),
+                      Expanded(flex: 2, child: Text(item.newResolution)),
+                      Expanded(flex: 1, child: Text(item.newSizeString)),
                       Expanded(
                         flex: 2,
                         child: Text(
