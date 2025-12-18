@@ -27,6 +27,8 @@ class ImageListTable extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.colIndex,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Expanded(
@@ -34,6 +36,8 @@ class ImageListTable extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.colFileName,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Expanded(
@@ -41,13 +45,17 @@ class ImageListTable extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.colResolution,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: Text(
                   AppLocalizations.of(context)!.colAspectRatio,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Expanded(
@@ -55,6 +63,8 @@ class ImageListTable extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.colSize,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Expanded(
@@ -62,6 +72,8 @@ class ImageListTable extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.colNewResolution,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Expanded(
@@ -69,6 +81,8 @@ class ImageListTable extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.colNewSize,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Expanded(
@@ -76,6 +90,8 @@ class ImageListTable extends StatelessWidget {
                 child: Text(
                   AppLocalizations.of(context)!.colStatus,
                   style: const TextStyle(fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               SizedBox(
@@ -84,6 +100,8 @@ class ImageListTable extends StatelessWidget {
                   AppLocalizations.of(context)!.colAction,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
                 ),
               ),
             ],
@@ -108,7 +126,7 @@ class ImageListTable extends StatelessWidget {
                       child: Text(item.name, overflow: TextOverflow.ellipsis),
                     ),
                     Expanded(flex: 2, child: Text(item.resolution)),
-                    Expanded(flex: 1, child: Text(item.aspectRatio)),
+                    Expanded(flex: 2, child: Text(item.aspectRatio)),
                     Expanded(flex: 1, child: Text(item.sizeString)),
                     Expanded(flex: 2, child: Text(item.newResolution)),
                     Expanded(flex: 1, child: Text(item.newSizeString)),
