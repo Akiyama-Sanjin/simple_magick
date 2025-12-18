@@ -119,19 +119,19 @@ class ImageService {
         // 获取新图片信息
         final newItem = await getImageInfo(newPath, name);
         if (newItem != null) {
-          item.status = '完成';
+          item.status = ImageStatus.done;
           item.newWidth = newItem.width;
           item.newHeight = newItem.height;
           item.newSizeBytes = newItem.sizeBytes;
         } else {
-          item.status = '完成';
+          item.status = ImageStatus.done;
         }
       } else {
-        item.status = '失败';
+        item.status = ImageStatus.failed;
         debugPrint('Scale error: ${result.stderr}');
       }
     } catch (e) {
-      item.status = '错误';
+      item.status = ImageStatus.error;
       debugPrint('Scale exception: $e');
     }
   }

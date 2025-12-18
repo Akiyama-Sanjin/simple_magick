@@ -1,10 +1,12 @@
+enum ImageStatus { pending, processing, done, failed, error }
+
 class ImageItem {
   final String name;
   final String path;
   final int sizeBytes;
   final int width;
   final int height;
-  String status;
+  ImageStatus status;
   int? newWidth;
   int? newHeight;
   int? newSizeBytes;
@@ -15,7 +17,7 @@ class ImageItem {
     required this.sizeBytes,
     required this.width,
     required this.height,
-    this.status = '',
+    this.status = ImageStatus.pending,
     this.newWidth,
     this.newHeight,
     this.newSizeBytes,

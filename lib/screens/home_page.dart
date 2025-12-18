@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/image_item.dart';
 import '../services/image_service.dart';
 import '../widgets/image_list_table.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -35,8 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('提示'),
-            content: const Text('您已经缩放过本批图片，是否重新缩放并覆盖？'),
+            title: Text(AppLocalizations.of(context)!.dialogTitleTip),
+            content: Text(AppLocalizations.of(context)!.dialogContentOverwrite),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: Colors.grey.shade300,
                   foregroundColor: Colors.black87,
                 ),
-                child: const Text('否'),
+                child: Text(AppLocalizations.of(context)!.btnNo),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: const Text('是'),
+                child: Text(AppLocalizations.of(context)!.btnYes),
               ),
             ],
           );
@@ -76,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await ImageService.processWithConcurrency(_images, (item) async {
       if (!mounted) return;
       setState(() {
-        item.status = '处理中...';
+        item.status = ImageStatus.processing;
       });
 
       await ImageService.scaleImage(item, _scaleFactor);
@@ -129,9 +130,15 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       debugPrint('Error picking images: $e');
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error picking images: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(
+                context,
+              )!.msgErrorPicking.replaceAll('{error}', '$e'),
+            ),
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -147,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(AppLocalizations.of(context)!.windowTitle),
       ),
       body: Column(
         children: [
@@ -158,10 +165,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton.icon(
                   onPressed: _isLoading ? null : _pickImages,
                   icon: const Icon(Icons.add_photo_alternate),
-                  label: const Text('选择图片'),
+                  label: Text(AppLocalizations.of(context)!.btnSelectImages),
                 ),
                 const SizedBox(width: 20),
-                const Text('缩放比例: '),
+                Text(AppLocalizations.of(context)!.labelScaleRatio),
                 const SizedBox(width: 10),
                 SegmentedButton<double>(
                   segments: const [
@@ -181,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ? null
                       : _scaleImages,
                   icon: const Icon(Icons.transform),
-                  label: const Text('缩放图片'),
+                  label: Text(AppLocalizations.of(context)!.btnScaleImages),
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton.icon(
@@ -191,13 +198,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           Process.run('explorer', [_outputDir!]);
                         },
                   icon: const Icon(Icons.folder_open),
-                  label: const Text('打开目录'),
+                  label: Text(AppLocalizations.of(context)!.btnOpenDir),
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton.icon(
                   onPressed: _images.isEmpty || _isLoading ? null : _clearList,
                   icon: const Icon(Icons.delete_sweep),
-                  label: const Text('清空'),
+                  label: Text(AppLocalizations.of(context)!.btnClear),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red.shade100,
                     foregroundColor: Colors.red,

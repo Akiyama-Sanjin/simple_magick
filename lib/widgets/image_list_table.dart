@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/image_item.dart';
 
 class ImageListTable extends StatelessWidget {
@@ -19,69 +20,69 @@ class ImageListTable extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           color: Colors.grey.shade200,
-          child: const Row(
+          child: Row(
             children: [
               Expanded(
                 flex: 1,
                 child: Text(
-                  '序号',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colIndex,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 3,
                 child: Text(
-                  '文件名称',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colFileName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 2,
                 child: Text(
-                  '分辨率',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colResolution,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 1,
                 child: Text(
-                  '画面比例',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colAspectRatio,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 1,
                 child: Text(
-                  '大小',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colSize,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 2,
                 child: Text(
-                  '新分辨率',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colNewResolution,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 1,
                 child: Text(
-                  '新大小',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colNewSize,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 2,
                 child: Text(
-                  '处理进度',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colStatus,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
                 width: 40,
                 child: Text(
-                  '操作',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!.colAction,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -114,7 +115,7 @@ class ImageListTable extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        item.status,
+                        _getStatusText(context, item.status),
                         style: const TextStyle(color: Colors.blue),
                       ),
                     ),
@@ -139,5 +140,20 @@ class ImageListTable extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _getStatusText(BuildContext context, ImageStatus status) {
+    switch (status) {
+      case ImageStatus.pending:
+        return '';
+      case ImageStatus.processing:
+        return AppLocalizations.of(context)!.statusProcessing;
+      case ImageStatus.done:
+        return AppLocalizations.of(context)!.statusDone;
+      case ImageStatus.failed:
+        return AppLocalizations.of(context)!.statusFailed;
+      case ImageStatus.error:
+        return AppLocalizations.of(context)!.statusError;
+    }
   }
 }
