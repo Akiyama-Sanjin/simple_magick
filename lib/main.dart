@@ -118,6 +118,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _clearList() {
+    setState(() {
+      _images.clear();
+    });
+  }
+
   Future<void> _pickImages() async {
     setState(() {
       _isLoading = true;
@@ -232,6 +238,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       : _scaleImages,
                   icon: const Icon(Icons.transform),
                   label: const Text('缩放图片'),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton.icon(
+                  onPressed: _images.isEmpty || _isLoading ? null : _clearList,
+                  icon: const Icon(Icons.delete_sweep),
+                  label: const Text('清空'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade100,
+                    foregroundColor: Colors.red,
+                  ),
                 ),
               ],
             ),
