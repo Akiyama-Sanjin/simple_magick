@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
 
       try {
-        // 构造输出路径：原文件名_scaled.扩展名
+        // 构造输出路径
         final File file = File(item.path);
         final String dir = file.parent.path;
         final String name = item.name;
@@ -86,8 +86,16 @@ class _MyHomePageState extends State<MyHomePage> {
         final String nameWithoutExt = dotIndex != -1
             ? name.substring(0, dotIndex)
             : name;
-        final String ext = dotIndex != -1 ? name.substring(dotIndex) : '';
-        final String newPath = '$dir\\${nameWithoutExt}_scaled$ext';
+
+        // 创建 resized 子目录
+        final String resizedDirPath = '$dir\\resized';
+        final Directory resizedDir = Directory(resizedDirPath);
+        if (!await resizedDir.exists()) {
+          await resizedDir.create();
+        }
+
+        // 输出为 jpg
+        final String newPath = '$resizedDirPath\\$nameWithoutExt.jpg';
 
         final int percentage = (_scaleFactor * 100).toInt();
 
