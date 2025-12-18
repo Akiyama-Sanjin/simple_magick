@@ -132,11 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(
-                context,
-              )!.msgErrorPicking.replaceAll('{error}', '$e'),
-            ),
+            content: Text(AppLocalizations.of(context)!.msgErrorPicking('$e')),
           ),
         );
       }
