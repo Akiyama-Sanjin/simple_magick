@@ -1,4 +1,4 @@
-import 'dart:ui' as ui;
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +29,7 @@ class ImageItem {
   final int sizeBytes;
   final int width;
   final int height;
-  final String status;
+  String status;
 
   ImageItem({
     required this.name,
@@ -71,7 +71,51 @@ class _MyHomePageState extends State<MyHomePage> {
   double _scaleFactor = 0.5; // Default 50%
 
   Future<void> _scaleImages() async {
-    debugPrint('Scaling images by $_scaleFactor');
+    for (int i = 0; i < _images.length; i++) {
+      final item = _images[i];
+      setState(() {
+        item.status = '处理中...';
+      });
+
+      try {
+        // 构造输出路径：原文件名_scaled.扩展名
+        final File file = File(item.path);
+        final String dir = file.parent.path;
+        final String name = item.name;
+        final int dotIndex = name.lastIndexOf('.');
+        final String nameWithoutExt = dotIndex != -1
+            ? name.substring(0, dotIndex)
+            : name;
+        final String ext = dotIndex != -1 ? name.substring(dotIndex) : '';
+        final String newPath = '$dir\\${nameWithoutExt}_scaled$ext';
+
+        final int percentage = (_scaleFactor * 100).toInt();
+
+        // 调用 magick 进行缩放
+        final result = await Process.run('magick', [
+          item.path,
+          '-resize',
+          '$percentage%',
+          newPath,
+        ]);
+
+        if (result.exitCode == 0) {
+          setState(() {
+            item.status = '完成';
+          });
+        } else {
+          setState(() {
+            item.status = '失败';
+          });
+          debugPrint('Scale error: ${result.stderr}');
+        }
+      } catch (e) {
+        setState(() {
+          item.status = '错误';
+        });
+        debugPrint('Scale exception: $e');
+      }
+    }
   }
 
   Future<void> _pickImages() async {
@@ -89,23 +133,43 @@ class _MyHomePageState extends State<MyHomePage> {
         List<ImageItem> newImages = [];
         for (var file in result.files) {
           if (file.path != null) {
-            // 使用 ImageDescriptor 只读取图片元数据，不解码整个图片
-            final buffer = await ui.ImmutableBuffer.fromFilePath(file.path!);
-            final descriptor = await ui.ImageDescriptor.encoded(buffer);
+            try {
+              // 调用 magick identify 获取图片信息
+              // 格式: 宽|高|大小(字节)
+              final result = await Process.run('magick', [
+                'identify',
+                '-format',
+                '%w|%h|%B',
+                file.path!,
+              ]);
 
-            newImages.add(
-              ImageItem(
-                name: file.name,
-                path: file.path!,
-                sizeBytes: file.size,
-                width: descriptor.width,
-                height: descriptor.height,
-              ),
-            );
+              if (result.exitCode == 0) {
+                // 处理可能的多帧图片（如GIF），只取第一行
+                final String output = result.stdout.toString().trim();
+                final String firstLine = output.split('\n').first;
+                final List<String> parts = firstLine.split('|');
 
-            // 释放资源
-            descriptor.dispose();
-            buffer.dispose();
+                if (parts.length == 3) {
+                  final int width = int.tryParse(parts[0]) ?? 0;
+                  final int height = int.tryParse(parts[1]) ?? 0;
+                  final int sizeBytes = int.tryParse(parts[2]) ?? 0;
+
+                  newImages.add(
+                    ImageItem(
+                      name: file.name,
+                      path: file.path!,
+                      sizeBytes: sizeBytes,
+                      width: width,
+                      height: height,
+                    ),
+                  );
+                }
+              } else {
+                debugPrint('Magick identify failed: ${result.stderr}');
+              }
+            } catch (e) {
+              debugPrint('Error running magick: $e');
+            }
           }
         }
         setState(() {
