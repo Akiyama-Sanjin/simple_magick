@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -64,7 +63,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<ImageItem> _images = [];
+  final List<ImageItem> _images = [];
   bool _isLoading = false;
 
   Future<void> _pickImages() async {
