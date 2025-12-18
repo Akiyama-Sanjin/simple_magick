@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/image_item.dart';
@@ -95,7 +96,7 @@ class ImageListTable extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 40,
+                width: 80,
                 child: Text(
                   AppLocalizations.of(context)!.colAction,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -138,16 +139,35 @@ class ImageListTable extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      width: 40,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                        onPressed: () => onDelete(index),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                      width: 80,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                            onPressed: () => onDelete(index),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.visibility, size: 20),
+                            color: Colors.blue,
+                            onPressed:
+                                item.status == ImageStatus.done &&
+                                    item.outputPath != null
+                                ? () {
+                                    Process.run('explorer', [item.outputPath!]);
+                                  }
+                                : null,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
                       ),
                     ),
                   ],

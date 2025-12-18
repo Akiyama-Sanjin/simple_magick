@@ -10,6 +10,7 @@ class ImageItem {
   int? newWidth;
   int? newHeight;
   int? newSizeBytes;
+  String? outputPath;
 
   ImageItem({
     required this.name,
@@ -21,6 +22,7 @@ class ImageItem {
     this.newWidth,
     this.newHeight,
     this.newSizeBytes,
+    this.outputPath,
   });
 
   String get resolution => '${width}x$height';

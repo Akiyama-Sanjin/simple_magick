@@ -123,8 +123,10 @@ class ImageService {
           item.newWidth = newItem.width;
           item.newHeight = newItem.height;
           item.newSizeBytes = newItem.sizeBytes;
+          item.outputPath = newPath;
         } else {
           item.status = ImageStatus.done;
+          item.outputPath = newPath;
         }
       } else {
         item.status = ImageStatus.failed;
