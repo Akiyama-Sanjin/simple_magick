@@ -12,7 +12,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'Simple Magick';
 
   @override
-  String get windowTitle => 'Simple Magick：magick图片批量缩放工具';
+  String get windowTitle => 'Simple Magick：图片批量缩放工具';
 
   @override
   String get btnSelectImages => '选择图片';
