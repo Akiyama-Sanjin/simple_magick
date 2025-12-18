@@ -10,7 +10,6 @@ void main() async {
     size: Size(1080, 720),
     minimumSize: Size(1080, 720),
     center: true,
-    backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.normal,
     title: 'Simple Magick',
