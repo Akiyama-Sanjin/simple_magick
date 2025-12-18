@@ -148,18 +148,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 const SizedBox(width: 20),
                 const Text('缩放比例: '),
-                DropdownButton<double>(
-                  value: _scaleFactor,
-                  items: const [
-                    DropdownMenuItem(value: 0.25, child: Text('25%')),
-                    DropdownMenuItem(value: 0.50, child: Text('50%')),
+                const SizedBox(width: 10),
+                SegmentedButton<double>(
+                  segments: const [
+                    ButtonSegment<double>(value: 0.25, label: Text('25%')),
+                    ButtonSegment<double>(value: 0.50, label: Text('50%')),
                   ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _scaleFactor = value;
-                      });
-                    }
+                  selected: {_scaleFactor},
+                  onSelectionChanged: (Set<double> newSelection) {
+                    setState(() {
+                      _scaleFactor = newSelection.first;
+                    });
                   },
                 ),
                 const SizedBox(width: 20),
