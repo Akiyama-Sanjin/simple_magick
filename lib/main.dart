@@ -92,7 +92,54 @@ class _MyHomePageState extends State<MyHomePage> {
     await Future.wait(workers);
   }
 
+  Future<bool> _checkAllFilesExist() async {
+    if (_images.isEmpty) return false;
+    for (final item in _images) {
+      final File file = File(item.path);
+      final String dir = file.parent.path;
+      final String name = item.name;
+      final int dotIndex = name.lastIndexOf('.');
+      final String nameWithoutExt = dotIndex != -1
+          ? name.substring(0, dotIndex)
+          : name;
+      final String resizedDirPath = '$dir\\resized';
+      final String newPath = '$resizedDirPath\\$nameWithoutExt.jpg';
+
+      if (!await File(newPath).exists()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> _scaleImages() async {
+    if (await _checkAllFilesExist()) {
+      if (!mounted) return;
+      final bool? shouldOverwrite = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('提示'),
+            content: const Text('您已经缩放过本批图片，是否重新缩放并覆盖？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('否'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('是'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (shouldOverwrite != true) {
+        return;
+      }
+    }
+
     await _processWithConcurrency(_images, (item) async {
       if (!mounted) return;
       setState(() {
