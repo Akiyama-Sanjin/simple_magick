@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../models/image_item.dart';
@@ -15,6 +16,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<ImageItem> _images = [];
   bool _isLoading = false;
   double _scaleFactor = 0.5; // Default 50%
+  String? _outputDir;
 
   Future<bool> _checkAllFilesExist() async {
     if (_images.isEmpty) return false;
@@ -62,6 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
+    // 更新输出目录为第一张图片所在目录下的 resized 文件夹
+    if (_images.isNotEmpty) {
+      final String firstPath = _images.first.path;
+      final String parentDir = File(firstPath).parent.path;
+      setState(() {
+        _outputDir = '$parentDir\\resized';
+      });
+    }
+
     await ImageService.processWithConcurrency(_images, (item) async {
       if (!mounted) return;
       setState(() {
@@ -79,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _clearList() {
     setState(() {
       _images.clear();
+      _outputDir = null;
     });
   }
 
@@ -170,6 +182,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       : _scaleImages,
                   icon: const Icon(Icons.transform),
                   label: const Text('缩放图片'),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton.icon(
+                  onPressed: _outputDir == null
+                      ? null
+                      : () {
+                          Process.run('explorer', [_outputDir!]);
+                        },
+                  icon: const Icon(Icons.folder_open),
+                  label: const Text('打开目录'),
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton.icon(
