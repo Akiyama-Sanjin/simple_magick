@@ -311,6 +311,13 @@ class _MyHomePageState extends State<MyHomePage> {
             child: const Row(
               children: [
                 Expanded(
+                  flex: 1,
+                  child: Text(
+                    '序号',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
                   flex: 3,
                   child: Text(
                     '文件名称',
@@ -369,6 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   child: Row(
                     children: [
+                      Expanded(flex: 1, child: Text('${index + 1}')),
                       Expanded(
                         flex: 3,
                         child: Text(item.name, overflow: TextOverflow.ellipsis),
