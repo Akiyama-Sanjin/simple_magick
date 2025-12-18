@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../main.dart';
 import '../models/image_item.dart';
 import '../services/image_service.dart';
 import '../widgets/image_list_table.dart';
@@ -151,6 +152,29 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(AppLocalizations.of(context)!.windowTitle),
+        actions: [
+          PopupMenuButton<Locale>(
+            icon: const Icon(Icons.language),
+            tooltip: 'Language',
+            onSelected: (Locale locale) {
+              MyApp.setLocale(context, locale);
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<Locale>>[
+              const PopupMenuItem<Locale>(
+                value: Locale('zh'),
+                child: Text('简体中文'),
+              ),
+              const PopupMenuItem<Locale>(
+                value: Locale('en'),
+                child: Text('English'),
+              ),
+              const PopupMenuItem<Locale>(
+                value: Locale('ja'),
+                child: Text('日本語'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: Column(
         children: [
