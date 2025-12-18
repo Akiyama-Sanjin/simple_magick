@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -82,22 +82,23 @@ class _MyHomePageState extends State<MyHomePage> {
         List<ImageItem> newImages = [];
         for (var file in result.files) {
           if (file.path != null) {
-            File imageFile = File(file.path!);
-            var decodedImage = await decodeImageFromList(
-              await imageFile.readAsBytes(),
-            );
+            // 使用 ImageDescriptor 只读取图片元数据，不解码整个图片
+            final buffer = await ui.ImmutableBuffer.fromFilePath(file.path!);
+            final descriptor = await ui.ImageDescriptor.encoded(buffer);
 
             newImages.add(
               ImageItem(
                 name: file.name,
                 path: file.path!,
                 sizeBytes: file.size,
-                width: decodedImage.width,
-                height: decodedImage.height,
+                width: descriptor.width,
+                height: descriptor.height,
               ),
             );
-            // Dispose the image to free memory
-            decodedImage.dispose();
+
+            // 释放资源
+            descriptor.dispose();
+            buffer.dispose();
           }
         }
         setState(() {
