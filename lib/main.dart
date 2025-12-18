@@ -29,6 +29,7 @@ class ImageItem {
   final int sizeBytes;
   final int width;
   final int height;
+  final String status;
 
   ImageItem({
     required this.name,
@@ -36,6 +37,7 @@ class ImageItem {
     required this.sizeBytes,
     required this.width,
     required this.height,
+    this.status = '',
   });
 
   String get resolution => '${width}x$height';
@@ -66,6 +68,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<ImageItem> _images = [];
   bool _isLoading = false;
+  double _scaleFactor = 0.5; // Default 50%
+
+  Future<void> _scaleImages() async {
+    debugPrint('Scaling images by $_scaleFactor');
+  }
 
   Future<void> _pickImages() async {
     setState(() {
@@ -132,10 +139,38 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : _pickImages,
-              icon: const Icon(Icons.add_photo_alternate),
-              label: const Text('选择图片'),
+            child: Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _isLoading ? null : _pickImages,
+                  icon: const Icon(Icons.add_photo_alternate),
+                  label: const Text('选择图片'),
+                ),
+                const SizedBox(width: 20),
+                const Text('缩放比例: '),
+                DropdownButton<double>(
+                  value: _scaleFactor,
+                  items: const [
+                    DropdownMenuItem(value: 0.25, child: Text('25%')),
+                    DropdownMenuItem(value: 0.50, child: Text('50%')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _scaleFactor = value;
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton.icon(
+                  onPressed: _images.isEmpty || _isLoading
+                      ? null
+                      : _scaleImages,
+                  icon: const Icon(Icons.transform),
+                  label: const Text('缩放图片'),
+                ),
+              ],
             ),
           ),
           if (_isLoading)
@@ -153,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: const Row(
               children: [
                 Expanded(
-                  flex: 4,
+                  flex: 3,
                   child: Text(
                     '文件名称',
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -177,6 +212,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   flex: 1,
                   child: Text(
                     '大小',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    '处理进度',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -205,12 +247,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Row(
                     children: [
                       Expanded(
-                        flex: 4,
+                        flex: 3,
                         child: Text(item.name, overflow: TextOverflow.ellipsis),
                       ),
                       Expanded(flex: 2, child: Text(item.resolution)),
                       Expanded(flex: 1, child: Text(item.aspectRatio)),
                       Expanded(flex: 1, child: Text(item.sizeString)),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          item.status,
+                          style: const TextStyle(color: Colors.blue),
+                        ),
+                      ),
                       SizedBox(
                         width: 40,
                         child: IconButton(
