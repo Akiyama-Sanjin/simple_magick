@@ -224,6 +224,11 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
       if (result != null) {
+        // 清空现有列表
+        setState(() {
+          _images.clear();
+        });
+
         final List<ImageItem> newImages = [];
         await _processWithConcurrency(result.files, (file) async {
           if (file.path == null) return;
