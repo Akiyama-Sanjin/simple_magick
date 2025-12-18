@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'NotoSansSC',
       ),
-      home: const MyHomePage(title: 'Simple Magick'),
+      home: const MyHomePage(title: 'Simple Magick：magick图片批量缩放工具'),
     );
   }
 }
