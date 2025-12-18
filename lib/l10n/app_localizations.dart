@@ -249,6 +249,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error picking images: {error}'**
   String msgErrorPicking(Object error);
+
+  /// No description provided for @tooltipLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get tooltipLanguage;
 }
 
 class _AppLocalizationsDelegate

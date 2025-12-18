@@ -23,5 +23,6 @@
     "statusDone": "完成",
     "statusFailed": "失败",
     "statusError": "错误",
-    "msgErrorPicking": "选择图片出错: {error}"
+    "msgErrorPicking": "选择图片出错: {error}",
+    "tooltipLanguage": "语言"
 }

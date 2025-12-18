@@ -85,4 +85,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String msgErrorPicking(Object error) {
     return 'Error picking images: $error';
   }
+
+  @override
+  String get tooltipLanguage => 'Language';
 }

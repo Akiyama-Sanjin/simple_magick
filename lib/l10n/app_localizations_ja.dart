@@ -84,4 +84,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String msgErrorPicking(Object error) {
     return '画像選択エラー: $error';
   }
+
+  @override
+  String get tooltipLanguage => '言語';
 }

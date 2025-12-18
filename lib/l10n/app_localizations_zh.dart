@@ -84,4 +84,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String msgErrorPicking(Object error) {
     return '选择图片出错: $error';
   }
+
+  @override
+  String get tooltipLanguage => '语言';
 }

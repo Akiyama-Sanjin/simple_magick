@@ -155,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           PopupMenuButton<Locale>(
             icon: const Icon(Icons.language),
-            tooltip: 'Language',
+            tooltip: AppLocalizations.of(context)!.tooltipLanguage,
             onSelected: (Locale locale) {
               MyApp.setLocale(context, locale);
             },
