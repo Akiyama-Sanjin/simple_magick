@@ -94,8 +94,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // 调用 magick 进行缩放
         final result = await Process.run('magick', [
           item.path,
-          '-resize',
+          '-scale',
           '$percentage%',
+          '-quality',
+          '95',
+          '-sampling-factor',
+          '4:4:4',
           newPath,
         ]);
 
@@ -144,6 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // 格式: 宽|高|大小(字节)
               final result = await Process.run('magick', [
                 'identify',
+                '-ping',
                 '-format',
                 '%w|%h|%B',
                 file.path!,
