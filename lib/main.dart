@@ -70,9 +70,31 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoading = false;
   double _scaleFactor = 0.5; // Default 50%
 
+  Future<void> _processWithConcurrency<T>(
+    List<T> items,
+    Future<void> Function(T) processor,
+    int concurrency,
+  ) async {
+    final iterator = items.iterator;
+    final List<Future> workers = [];
+
+    Future<void> worker() async {
+      while (iterator.moveNext()) {
+        final item = iterator.current;
+        await processor(item);
+      }
+    }
+
+    for (int i = 0; i < concurrency; i++) {
+      workers.add(worker());
+    }
+
+    await Future.wait(workers);
+  }
+
   Future<void> _scaleImages() async {
-    for (int i = 0; i < _images.length; i++) {
-      final item = _images[i];
+    await _processWithConcurrency(_images, (item) async {
+      if (!mounted) return;
       setState(() {
         item.status = '处理中...';
       });
@@ -91,7 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
         final String resizedDirPath = '$dir\\resized';
         final Directory resizedDir = Directory(resizedDirPath);
         if (!await resizedDir.exists()) {
-          await resizedDir.create();
+          try {
+            await resizedDir.create();
+          } catch (_) {
+            // 忽略并发创建时的错误
+          }
         }
 
         // 输出为 jpg
@@ -111,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
           newPath,
         ]);
 
+        if (!mounted) return;
         if (result.exitCode == 0) {
           setState(() {
             item.status = '完成';
@@ -122,12 +149,14 @@ class _MyHomePageState extends State<MyHomePage> {
           debugPrint('Scale error: ${result.stderr}');
         }
       } catch (e) {
-        setState(() {
-          item.status = '错误';
-        });
+        if (mounted) {
+          setState(() {
+            item.status = '错误';
+          });
+        }
         debugPrint('Scale exception: $e');
       }
-    }
+    }, 4);
   }
 
   void _clearList() {
@@ -148,52 +177,54 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
       if (result != null) {
-        List<ImageItem> newImages = [];
-        for (var file in result.files) {
-          if (file.path != null) {
-            try {
-              // 调用 magick identify 获取图片信息
-              // 格式: 宽|高|大小(字节)
-              final result = await Process.run('magick', [
-                'identify',
-                '-ping',
-                '-format',
-                '%w|%h|%B',
-                file.path!,
-              ]);
+        final List<ImageItem> newImages = [];
+        await _processWithConcurrency(result.files, (file) async {
+          if (file.path == null) return;
+          try {
+            // 调用 magick identify 获取图片信息
+            // 格式: 宽|高|大小(字节)
+            final result = await Process.run('magick', [
+              'identify',
+              '-ping',
+              '-format',
+              '%w|%h|%B',
+              file.path!,
+            ]);
 
-              if (result.exitCode == 0) {
-                // 处理可能的多帧图片（如GIF），只取第一行
-                final String output = result.stdout.toString().trim();
-                final String firstLine = output.split('\n').first;
-                final List<String> parts = firstLine.split('|');
+            if (result.exitCode == 0) {
+              // 处理可能的多帧图片（如GIF），只取第一行
+              final String output = result.stdout.toString().trim();
+              final String firstLine = output.split('\n').first;
+              final List<String> parts = firstLine.split('|');
 
-                if (parts.length == 3) {
-                  final int width = int.tryParse(parts[0]) ?? 0;
-                  final int height = int.tryParse(parts[1]) ?? 0;
-                  final int sizeBytes = int.tryParse(parts[2]) ?? 0;
+              if (parts.length == 3) {
+                final int width = int.tryParse(parts[0]) ?? 0;
+                final int height = int.tryParse(parts[1]) ?? 0;
+                final int sizeBytes = int.tryParse(parts[2]) ?? 0;
 
-                  newImages.add(
-                    ImageItem(
-                      name: file.name,
-                      path: file.path!,
-                      sizeBytes: sizeBytes,
-                      width: width,
-                      height: height,
-                    ),
-                  );
-                }
-              } else {
-                debugPrint('Magick identify failed: ${result.stderr}');
+                newImages.add(
+                  ImageItem(
+                    name: file.name,
+                    path: file.path!,
+                    sizeBytes: sizeBytes,
+                    width: width,
+                    height: height,
+                  ),
+                );
               }
-            } catch (e) {
-              debugPrint('Error running magick: $e');
+            } else {
+              debugPrint('Magick identify failed: ${result.stderr}');
             }
+          } catch (e) {
+            debugPrint('Error running magick: $e');
           }
+        }, 4);
+
+        if (mounted) {
+          setState(() {
+            _images.addAll(newImages);
+          });
         }
-        setState(() {
-          _images.addAll(newImages);
-        });
       }
     } catch (e) {
       debugPrint('Error picking images: $e');
