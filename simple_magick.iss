@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "Simple Magick"
-#define MyAppVersion "0.3"
+#define MyAppVersion "0.4"
 #define MyAppPublisher "秋山散人"
 #define MyAppURL "https://zhangdev.com/"
 #define MyAppExeName "simple_magick.exe"
